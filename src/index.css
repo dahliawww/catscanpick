@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary-light: #ECB88A;
+    --color-primary: #CAAD5F;
+    --color-primary-dark: #563F2E;
+  }
+  
+  body {
+    @apply text-[#333333];
+  }
+}
+
+@layer components {
+  /* Table Header Styles */
+  .table-thead {
+    @apply bg-gradient-to-r from-brand-red to-brand-red/90 dark:from-brand-red dark:to-brand-red/90;
+  }
+
+  .table-th-base {
+    @apply sticky top-0 z-10 px-4 py-4 text-sm font-semibold bg-brand-red text-white border-b border-brand-gold/50 whitespace-nowrap;
+  }
+
+  .table-th-sticky {
+    @apply sticky top-0 left-0 z-20 px-4 py-4 text-sm font-semibold text-left text-white border-b border-brand-gold/50 whitespace-nowrap bg-[#72463b];
+  }
+
+  /* Table Body Styles */
+  .table-tbody {
+    @apply divide-y divide-gray-200 dark:divide-gray-700;
+  }
+
+  .table-tr {
+    @apply transition-colors duration-150 hover:bg-brand-beige/20 dark:hover:bg-gray-700/50;
+  }
+
+  .table-td-base {
+    @apply px-4 py-4 text-sm text-[#333333] border-b border-gray-100 dark:text-gray-300 whitespace-nowrap dark:border-gray-700;
+  }
+
+  .table-td-center {
+    @apply px-4 py-4 text-sm text-center text-[#333333] border-b border-gray-100 dark:text-gray-300 whitespace-nowrap dark:border-gray-700;
+  }
+
+  .table-td-sticky {
+    @apply sticky  left-0 z-10 px-4 py-4 text-sm font-medium text-[#333333] bg-brand-beige border-r border-gray-200 dark:text-gray-100 whitespace-nowrap dark:bg-gray-800 dark:border-gray-700;
+  }
+
+  .table-td-taurine {
+    @apply px-4 py-4 text-sm font-semibold text-center border-b border-gray-100 text-brand-red dark:text-brand-gold whitespace-nowrap bg-brand-gold/10 dark:bg-brand-gold/20 dark:border-gray-700;
+  }
+
+  /* Select dropdown arrow */
+  .select-dropdown {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    appearance: none;
+  }
+}
