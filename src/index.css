@@ -34,7 +34,7 @@
   }
 
   .table-tr {
-    @apply transition-colors duration-150 hover:bg-brand-beige/20;
+    @apply transition-colors duration-150 hover:bg-brand-beige/30;
   }
 
   .table-td-base {
@@ -50,7 +50,7 @@
   }
 
   .table-td-taurine {
-    @apply px-4 py-4 text-sm font-semibold text-center border-b border-gray-100 text-brand-red whitespace-nowrap bg-brand-gold/10;
+    @apply px-4 py-4 text-sm font-semibold text-center border-b border-gray-100 text-brand-red whitespace-nowrap;
   }
 
   /* Select dropdown arrow */
