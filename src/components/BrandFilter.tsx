@@ -72,7 +72,7 @@ export default function BrandFilter({
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center justify-between w-full px-4 py-3 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
+            className="flex items-center justify-between w-full px-4 py-3 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
           >
             <span>
               {isAllSelected
@@ -92,11 +92,11 @@ export default function BrandFilter({
           </button>
 
           {isOpen && (
-            <div className="absolute z-50 w-64 mt-2 overflow-y-auto bg-white border-2 border-gray-300 rounded-lg shadow-lg dark:bg-gray-700 dark:border-gray-600 max-h-64">
+            <div className="absolute z-50 w-64 mt-2 overflow-y-auto bg-white border-2 border-gray-300 rounded-lg shadow-lg max-h-64">
               <div className="p-2">
                 {/* All 選項 */}
                 <label
-                  className="flex items-center px-3 py-2 font-medium text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
+                  className="flex items-center px-3 py-2 font-medium text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100"
                 >
                   <div className="relative flex items-center justify-center">
                     <input
@@ -117,13 +117,13 @@ export default function BrandFilter({
                   </div>
                   <span className="ml-3">All</span>
                 </label>
-                <div className="my-1 border-t border-gray-200 dark:border-gray-600"></div>
+                <div className="my-1 border-t border-gray-200"></div>
                 {availableBrands.map((brand) => {
                   const isSelected = selectedBrands.includes(brand)
                   return (
                     <label
                       key={brand}
-                      className="flex items-center px-3 py-2 text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
+                      className="flex items-center px-3 py-2 text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100"
                     >
                       <div className="relative flex items-center justify-center">
                         <input
@@ -148,10 +148,10 @@ export default function BrandFilter({
                 })}
               </div>
               {selectedBrands.length > 0 && (
-                <div className="p-2 border-t border-gray-200 dark:border-gray-600">
+                <div className="p-2 border-t border-gray-200">
                   <button
                     onClick={handleClearAll}
-                    className="w-full px-3 py-2 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    className="w-full px-3 py-2 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50"
                   >
                     清除全部
                   </button>

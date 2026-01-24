@@ -59,7 +59,7 @@ export default function CatCanTable({ catCans, searchQuery, sortField, sortOrder
   return (
     <>
       {/* Table Container */}
-      <div className="overflow-hidden bg-white max-w-[1280px] mx-auto border border-gray-200 shadow-2xl dark:bg-gray-800 rounded-2xl dark:border-gray-700">
+      <div className="overflow-hidden bg-white max-w-[1280px] mx-auto border border-gray-200 shadow-2xl rounded-2xl">
         <div className="overflow-x-auto max-h-[800px] overflow-y-auto">
           <table className="w-full border-collapse">
             <thead className="table-thead">
@@ -114,7 +114,7 @@ export default function CatCanTable({ catCans, searchQuery, sortField, sortOrder
                   <td className="table-td-sticky">
                     {catCan.made}
                   </td>
-                  <td className="font-medium table-td-base dark:text-gray-100">
+                  <td className="font-medium table-td-base">
                     {catCan.brand}
                   </td>
                   {/* <td className="table-td-base">
@@ -129,7 +129,7 @@ export default function CatCanTable({ catCans, searchQuery, sortField, sortOrder
                   <td className="table-td-center">
                     {catCan.kcal}
                   </td>
-                  <td className="table-td-center text-brand-red dark:text-brand-beige">
+                  <td className="table-td-center text-brand-red">
                     {catCan.moistureContent}
                   </td>
                   <td className="table-td-center">
@@ -161,11 +161,11 @@ export default function CatCanTable({ catCans, searchQuery, sortField, sortOrder
       </div>
 
       {/* Footer Info */}
-      <div className="pt-12 pb-4 text-sm font-bold text-center text-gray-500 dark:text-gray-400">
+      <div className="pt-12 pb-4 text-sm font-bold text-center text-gray-500">
         <p>
           共 {catCans.length} 項產品
           {searchQuery && (
-            <span className="ml-2 text-brand-red dark:text-brand-gold">
+              <span className="ml-2 text-brand-red">
               (搜尋: "{searchQuery}")
             </span>
           )}

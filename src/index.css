@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --color-primary-light: #ECB88A;
-    --color-primary: #CAAD5F;
-    --color-primary-dark: #563F2E;
+    --color-primary-light: #ecb88a;
+    --color-primary: #caad5f;
+    --color-primary-dark: #563f2e;
   }
-  
+
   body {
     @apply text-[#333333];
   }
@@ -17,7 +17,7 @@
 @layer components {
   /* Table Header Styles */
   .table-thead {
-    @apply bg-gradient-to-r from-brand-red to-brand-red/90 dark:from-brand-red dark:to-brand-red/90;
+    @apply bg-gradient-to-r from-brand-red to-brand-red/90;
   }
 
   .table-th-base {
@@ -30,27 +30,27 @@
 
   /* Table Body Styles */
   .table-tbody {
-    @apply divide-y divide-gray-200 dark:divide-gray-700;
+    @apply divide-y divide-gray-200;
   }
 
   .table-tr {
-    @apply transition-colors duration-150 hover:bg-brand-beige/20 dark:hover:bg-gray-700/50;
+    @apply transition-colors duration-150 hover:bg-brand-beige/20;
   }
 
   .table-td-base {
-    @apply px-4 py-4 text-sm text-[#333333] border-b border-gray-100 dark:text-gray-300 whitespace-nowrap dark:border-gray-700;
+    @apply px-4 py-4 text-sm text-[#333333] border-b border-gray-100 whitespace-nowrap;
   }
 
   .table-td-center {
-    @apply px-4 py-4 text-sm text-center text-[#333333] border-b border-gray-100 dark:text-gray-300 whitespace-nowrap dark:border-gray-700;
+    @apply px-4 py-4 text-sm text-center text-[#333333] border-b border-gray-100 whitespace-nowrap;
   }
 
   .table-td-sticky {
-    @apply sticky  left-0 z-10 px-4 py-4 text-sm font-medium text-[#333333] bg-brand-beige border-r border-gray-200 dark:text-gray-100 whitespace-nowrap dark:bg-gray-800 dark:border-gray-700;
+    @apply sticky  left-0 z-10 px-4 py-4 text-sm font-medium text-[#333333] bg-brand-beige border-r border-gray-200 whitespace-nowrap;
   }
 
   .table-td-taurine {
-    @apply px-4 py-4 text-sm font-semibold text-center border-b border-gray-100 text-brand-red dark:text-brand-gold whitespace-nowrap bg-brand-gold/10 dark:bg-brand-gold/20 dark:border-gray-700;
+    @apply px-4 py-4 text-sm font-semibold text-center border-b border-gray-100 text-brand-red whitespace-nowrap bg-brand-gold/10;
   }
 
   /* Select dropdown arrow */
