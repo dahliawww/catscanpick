@@ -5,19 +5,23 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: "#f8f4ed",
-          DEFAULT: "#CAAD5F",
           dark: "#563F2E",
         },
         brand: {
           beige: "#e8e3df",
           gold: "#aa9880",
           red: "#935945",
-          darkred: "#764737",
+          yellow: "#FFC408",
+          pink: "#fad5dc",
+          lightpink: "#fce1e6",
         },
         text: {
           dark: "#333333",
         },
+      },
+      fontFamily: {
+        huninn: ["jf-openhuninn", "sans-serif"],
+        kirang: ['"Kirang Haerang"', "cursive"],
       },
     },
   },

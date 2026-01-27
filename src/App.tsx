@@ -8,6 +8,8 @@ import BrandFilter from "./components/BrandFilter";
 import CatCanTable from "./components/CatCanTable";
 import Header from "./partical/Header";
 import Footer from "./partical/Footer";
+import CatPawBackground from "./components/CatPawBackground";
+import Loading from "./components/Loading";
 
 // ============================================================================
 // Types
@@ -83,6 +85,7 @@ function App() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortField, setSortField] = useState<SortField>("weight_g");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
 
   // ============================================================================
   // Data Loading
@@ -257,21 +260,17 @@ function App() {
   // ============================================================================
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="text-center">
-          <div className="inline-block w-12 h-12 mb-4 border-4 border-indigo-600 rounded-full animate-spin border-t-transparent"></div>
-          <p className="text-xl font-semibold text-[#333333]">載入中...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (catCans.length === 0 && !loading) {
     return (
       <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <Header />
+          <Header
+            showCalorieCalculator={showCalorieCalculator}
+            setShowCalorieCalculator={setShowCalorieCalculator}
+          />
           <div className="py-12 text-center">
             <p className="text-xl text-gray-600">
               無法載入數據，請檢查 CSV 文件是否存在
@@ -288,29 +287,36 @@ function App() {
 
   return (
     <>
+      {/* Background */}
+      <CatPawBackground />
+
       {/* Header */}
-      <div className="mx-auto max-w-[1000px]">
-        <Header />
+      <div className="relative z-10 mx-auto max-w-[700px]">
+        <Header
+          showCalorieCalculator={showCalorieCalculator}
+          setShowCalorieCalculator={setShowCalorieCalculator}
+        />
       </div>
 
       {/* Calorie Calculator Section */}
-      <div className="relative bg-brand-gold">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1">
-            <div className="py-2">
-              <CalorieCalculator />
+      {showCalorieCalculator && (
+        <div className="relative z-10 mt-4 md:mt-6 ">
+          <div className="max-w-[700px] mx-auto">
+            <div className="grid grid-cols-1">
+              <div className="py-2">
+                <CalorieCalculator />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
+      )}
       {/* Main Content */}
-      <div className="py-6 md:px-2">
+      <div className="relative z-10 py-6 md:mt-4 md:px-2">
         <div className="mx-auto max-w-[1280px]">
           {/* Filters Section */}
-          <div className="max-w-[1000px] mb-6 flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mx-auto px-4 ">
+          <div className="max-w-[1280px] mb-6 flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mx-auto px-4 ">
             {/* Search Bar */}
-            <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/3">
               <SearchBar
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -318,7 +324,7 @@ function App() {
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex flex-col w-full space-y-4 md:w-1/2 md:flex-row md:space-x-4 md:space-y-0">
+            <div className="flex flex-col w-full space-y-4 md:w-2/3 md:flex-row md:space-x-4 md:space-y-0">
               <MadeFilter
                 availableMades={availableMades}
                 selectedMades={selectedMades}
@@ -338,7 +344,7 @@ function App() {
           </div>
 
           {/* Table Section */}
-          <div className="px-4 ">
+          <div className="relative px-4">
             <CatCanTable
               catCans={sortedCatCans}
               searchQuery={searchQuery}
@@ -349,7 +355,6 @@ function App() {
           </div>
         </div>
       </div>
-
       {/* Footer */}
       <div className="pt-1 pb-6 bg-brand-beige">
         <Footer />

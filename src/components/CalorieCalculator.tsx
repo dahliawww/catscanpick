@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface DERRange {
   label: string;
@@ -18,8 +18,19 @@ const DER_RANGES: DERRange[] = [
 ];
 
 export default function CalorieCalculator() {
-  const [weight, setWeight] = useState<string>("");
+  // 從 localStorage 讀取上次的體重，如果沒有則為空字串
+  const [weight, setWeight] = useState<string>(() => {
+    const savedWeight = localStorage.getItem("catWeight");
+    return savedWeight || "";
+  });
   const [selectedDER, setSelectedDER] = useState<DERRange>(DER_RANGES[2]); // 預設成貓絕育
+
+  // 當體重改變時，儲存到 localStorage
+  useEffect(() => {
+    if (weight) {
+      localStorage.setItem("catWeight", weight);
+    }
+  }, [weight]);
 
   // 計算 RER = 70 × 體重(kg)的0.75次方
   const calculateRER = (weightKg: number): number => {
@@ -54,88 +65,96 @@ export default function CalorieCalculator() {
   const result = calculateDailyCalories();
 
   return (
-    <div className="p-4 mx-6 my-4 rounded-md shadow-xl bg-white/90">
-      <div className="grid gap-4 m-1 md:grid-cols-2">
-        {/* 體重輸入 */}
-        <div>
-          <label
-            htmlFor="cat-weight"
-            className="block mb-2 text-sm font-medium text-[#333333]"
-          >
-            貓咪體重 (kg)
-          </label>
-          <input
-            id="cat-weight"
-            type="number"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            placeholder="例如: 4.5"
-            step="0.1"
-            min="0.1"
-            className="w-full p-2 text-[#333333] bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-          />
-        </div>
-
-        {/* DER 選擇 */}
-        <div className="relative">
-          <label
-            htmlFor="der-select"
-            className="block mb-2 text-sm font-medium text-[#333333]"
-          >
-            貓咪狀態
-          </label>
-          <select
-            id="der-select"
-            value={DER_RANGES.findIndex((r) => r.label === selectedDER.label)}
-            onChange={(e) =>
-              setSelectedDER(DER_RANGES[parseInt(e.target.value)])
-            }
-            className="select-dropdown w-full p-2 pr-10 text-[#333333] bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
-          >
-            {DER_RANGES.map((range, index) => (
-              <option key={index} value={index}>
-                {range.label} (DER: {range.min}-{range.max})
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* 計算結果 */}
-      <div className="grid grid-cols-1 gap-4 pt-4 m-1 md:grid-cols-2">
-        {/* 熱量需求 */}
-        <div className="px-2 py-3 border-2 rounded-lg border-brand-gold/30 bg-brand-gold/10 backdrop-blur-sm">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[#333333]">
-                RER (基礎代謝率):
-              </span>
-              <span className="text-sm font-semibold text-brand-red">
-                {result ? `${result.rer} kcal` : "-"}
-              </span>
+    <div className="mx-4 md:my-3">
+      <div className="p-2 border-2 rounded-md shadow-xl bg-brand-pink border-slate-600">
+        <div className="px-3 py-6 bg-white rounded-md md:p-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* 體重輸入 */}
+            <div>
+              <label
+                htmlFor="cat-weight"
+                className="block mb-2 text-sm font-medium text-slate-800 font-huninn"
+              >
+                貓咪體重 (kg)
+              </label>
+              <input
+                id="cat-weight"
+                type="number"
+                value={weight}
+                onChange={(e) => {
+                  setWeight(e.target.value);
+                }}
+                placeholder="例如: 4.5"
+                step="0.1"
+                min="0.1"
+                className="w-full p-3 transition-all duration-200 bg-white border-2 rounded-lg text-slate-800 border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-brand-yellow font-huninn"
+              />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-[#333333]">
-                每日熱量範圍:
-              </span>
-              <span className="text-lg font-bold text-brand-red">
-                {result
-                  ? `${result.minCalories} - ${result.maxCalories} kcal`
-                  : "-"}
-              </span>
+
+            {/* DER 選擇 */}
+            <div className="relative">
+              <label
+                htmlFor="der-select"
+                className="block mb-2 text-sm font-medium text-slate-800 font-huninn"
+              >
+                貓咪狀態
+              </label>
+              <select
+                id="der-select"
+                value={DER_RANGES.findIndex(
+                  (r) => r.label === selectedDER.label,
+                )}
+                onChange={(e) =>
+                  setSelectedDER(DER_RANGES[parseInt(e.target.value)])
+                }
+                className="w-full p-3 pr-10 transition-all duration-200 bg-white border-2 rounded-lg select-dropdown text-slate-800 border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-brand-yellow font-huninn"
+              >
+                {DER_RANGES.map((range, index) => (
+                  <option key={index} value={index}>
+                    {range.label} (DER: {range.min}-{range.max})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
-        </div>
 
-        {/* 水分需求 */}
-        <div className="px-2 py-3 border-2 rounded-lg border-brand-gold/30 bg-brand-gold/10 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-[#333333]">
-              每日所需水分:
-            </span>
-            <span className="text-lg font-bold text-brand-red">
-              {result ? `${result.minWater} - ${result.maxWater} ml` : "-"}
-            </span>
+          {/* 計算結果 */}
+          <div className="grid gap-4 pt-6">
+            {/* 熱量需求 */}
+            <div className="px-4 py-4 border-2 rounded-lg shadow-lg border-brand-yellow bg-brand-yellow/10">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-800 font-huninn">
+                    RER (基礎代謝率):
+                  </span>
+                  <span className="text-sm font-semibold text-slate-800 font-huninn">
+                    {result ? `${result.rer} kcal` : "-"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-800 font-huninn">
+                    每日熱量範圍:
+                  </span>
+                  <span className="text-lg font-bold text-slate-800 font-huninn">
+                    {result
+                      ? `${result.minCalories} - ${result.maxCalories} kcal`
+                      : "-"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 水分需求 */}
+            <div className="px-4 py-4 border-2 rounded-lg shadow-lg border-brand-yellow bg-brand-yellow/10">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-800 font-huninn">
+                  每日所需水分:
+                </span>
+                <span className="text-lg font-bold text-slate-800 font-huninn">
+                  {result ? `${result.minWater} - ${result.maxWater} ml` : "-"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ function SortableHeader({
 }) {
   return (
     <th
-      className="text-center transition-colors cursor-pointer table-th-base hover:bg-brand-darkred"
+      className="text-center transition-colors cursor-pointer table-th-base hover:bg-slate-700"
       onClick={() => onSort(field)}
     >
       <div className="flex items-center justify-center">
@@ -167,7 +167,7 @@ export default function CatCanTable({
                   <td className="table-td-base">{catCan.flaver}</td>
                   <td className="table-td-center">{catCan.weight_g}</td>
                   <td className="table-td-center">{catCan.kcal}</td>
-                  <td className="table-td-center text-brand-red">
+                  <td className="table-td-center text-slate-800">
                     {catCan.moistureContent}
                   </td>
                   <td className="table-td-center">{catCan.protein}</td>
