@@ -1,5 +1,5 @@
 import CatPawIcon from "../Icon/CatPawIcon";
-import CatTail from "../components/CatTail";
+import CatAni from "../components/CatAni";
 
 interface HeaderProps {
   showCalorieCalculator: boolean;
@@ -27,7 +27,7 @@ const Header = ({
 
       {/* Title Bar Section */}
       <div className="relative mx-auto max-w-[900px]">
-        <CatTail />
+        <CatAni />
         <div className="mx-4 ">
           <div className="flex items-center justify-between p-1.5 bg-white border-[7px] rounded-full shadow-lg border-slate-300">
             {/* Title */}
