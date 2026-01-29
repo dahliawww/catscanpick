@@ -1,6 +1,6 @@
 # 🐱 Cats Can Pick
 
-🌐 **Live Demo**: [https://catscanpick.netlify.app/](https://catscanpick.netlify.app/)
+🌐 **Live Demo**: [https://catscanpick.com/](https://catscanpick.com/)
 
 一個專為貓奴設計的貓罐頭比較工具，整合熱量計算機與營養成分比較表，幫助你為毛孩選擇最適合的罐頭。
 
