@@ -13,18 +13,24 @@ const Footer = () => {
   return (
     <div className="mt-10 mb-8">
       <div className="px-6 py-4 text-sm text-center text-slate-700">
-        © {new Date().getFullYear()} CatsCanPick ｜貓罐頭比較工具 ｜ by{" "}
-        <a href="mailto:bobomom2022@gmail.com" className="underline">
-          BoboMom
-        </a>
+        © {new Date().getFullYear()} CatsCanPick ｜貓罐頭比較工具
+      </div>
+      <hr
+        className="mx-auto border-0.5 rounded-full w-32 border-slate-600"
+        aria-hidden
+      />
+      <div className="pt-4 text-sm text-center text-slate-700">
         <a
           href="https://www.instagram.com/bobomom_22"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center ml-3 align-middle text-slate-700 hover:text-slate-900"
+          className="inline-flex items-center mr-2 align-middle text-slate-700 hover:text-slate-900"
           aria-label="BoboMom Instagram"
         >
-          <InstagramIcon className="w-4 h-5" />
+          <InstagramIcon className="w-4 h-4" />
+        </a>
+        <a href="mailto:bobomom2022@gmail.com" className="underline ">
+          BoboMom
         </a>
       </div>
     </div>
