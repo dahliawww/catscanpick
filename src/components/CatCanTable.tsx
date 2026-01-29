@@ -54,17 +54,35 @@ function SortableHeader({
   sortField,
   sortOrder,
   onSort,
+  ariaLabel,
 }: {
   field: SortField;
   children: React.ReactNode;
   sortField: SortField;
   sortOrder: SortOrder;
   onSort: (field: SortField) => void;
+  ariaLabel: string;
 }) {
+  const sortState =
+    sortField !== field
+      ? "可點擊排序"
+      : sortOrder === "asc"
+        ? "目前為升冪，點擊改為降冪"
+        : "目前為降冪，點擊改為升冪";
   return (
     <th
+      scope="col"
       className="text-center transition-colors cursor-pointer table-th-base hover:bg-slate-700"
       onClick={() => onSort(field)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSort(field);
+        }
+      }}
+      aria-label={`${ariaLabel}，${sortState}`}
     >
       <div className="flex items-center justify-center">
         {children}
@@ -85,21 +103,30 @@ export default function CatCanTable({
     <>
       {/* Table Container */}
       <div className="overflow-hidden bg-white max-w-[1280px] mx-auto border border-gray-200 shadow-2xl rounded-2xl">
-        <div className="overflow-x-auto max-h-[800px] overflow-y-auto">
+        <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
           <table className="w-full border-collapse">
+            <caption className="sr-only">
+              貓罐頭營養成分比較表 -
+              包含品牌、口味、產地、蛋白質、脂肪、熱量、鈣與磷含量分析
+            </caption>
             <thead className="table-thead">
               <tr>
-                <th className="text-left table-th-sticky">產地</th>
-                <th className="text-left table-th-base">品牌</th>
-                {/* <th className="text-left table-th-base">
-                  名稱
-                </th> */}
-                <th className="text-left table-th-base">口味</th>
+                <th scope="col" className="text-left table-th-sticky">
+                  口味
+                </th>
+                <th scope="col" className="text-left table-th-base">
+                  品牌
+                </th>
+                {/* <th scope="col" className="text-left table-th-base">名稱</th> */}
+                <th scope="col" className="text-left table-th-base">
+                  產地
+                </th>
                 <SortableHeader
                   field="weight_g"
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依重量排序"
                 >
                   重量(g)
                 </SortableHeader>
@@ -108,6 +135,7 @@ export default function CatCanTable({
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依熱量排序"
                 >
                   熱量(kcal)
                 </SortableHeader>
@@ -116,6 +144,7 @@ export default function CatCanTable({
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依水分含量排序"
                 >
                   水分(ml)
                 </SortableHeader>
@@ -124,22 +153,25 @@ export default function CatCanTable({
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依粗蛋白質排序"
                 >
-                  蛋白質(%)
+                  粗蛋白質(%)
                 </SortableHeader>
                 <SortableHeader
                   field="fat"
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依粗脂肪排序"
                 >
-                  脂肪(%)
+                  粗脂肪(%)
                 </SortableHeader>
                 <SortableHeader
                   field="Ca"
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依鈣排序"
                 >
                   鈣(%)
                 </SortableHeader>
@@ -148,23 +180,33 @@ export default function CatCanTable({
                   sortField={sortField}
                   sortOrder={sortOrder}
                   onSort={onSort}
+                  ariaLabel="依磷排序"
                 >
                   磷(%)
                 </SortableHeader>
-                <th className="text-center table-th-base">纖維(%)</th>
-                <th className="text-center table-th-base">灰分(%)</th>
-                <th className="text-center table-th-base ">牛磺酸(mg)</th>
+                <th scope="col" className="text-center table-th-base">
+                  粗纖維(%)
+                </th>
+                <th scope="col" className="text-center table-th-base">
+                  灰分(%)
+                </th>
+                <th scope="col" className="text-center table-th-base">
+                  牛磺酸(mg)
+                </th>
               </tr>
             </thead>
             <tbody className="table-tbody">
               {catCans.map((catCan, index) => (
                 <tr key={index} className="table-tr">
-                  <td className="table-td-sticky">{catCan.made}</td>
+                  <th
+                    scope="row"
+                    className="font-normal text-left table-td-sticky"
+                  >
+                    {catCan.flaver}
+                  </th>
                   <td className="font-medium table-td-base">{catCan.brand}</td>
-                  {/* <td className="table-td-base">
-                    {catCan.name}
-                  </td> */}
-                  <td className="table-td-base">{catCan.flaver}</td>
+                  {/* <td className="table-td-base">{catCan.name}</td> */}
+                  <td className="table-td-base">{catCan.made}</td>
                   <td className="table-td-center">{catCan.weight_g}</td>
                   <td className="table-td-center">{catCan.kcal}</td>
                   <td className="table-td-center text-slate-800">
@@ -185,11 +227,11 @@ export default function CatCanTable({
       </div>
 
       {/* Footer Info */}
-      <div className="pt-12 pb-4 text-sm font-bold text-center text-gray-500">
+      <div className="pt-12 pb-4 text-base font-bold text-center text-gray-500">
         <p>
           共 {catCans.length} 項產品
           {searchQuery && (
-            <span className="ml-2 text-brand-red">(搜尋: "{searchQuery}")</span>
+            <span className="ml-2 text-slate-800">(搜尋: "{searchQuery}")</span>
           )}
         </p>
       </div>

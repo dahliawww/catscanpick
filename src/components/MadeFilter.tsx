@@ -74,8 +74,12 @@ export default function MadeFilter({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <button
+        id="made-filter-button"
         type="button"
         onClick={() => setIsOpen(!isOpen)}
+        {...(isOpen ? { "aria-expanded": "true" } : { "aria-expanded": "false" })}
+        aria-haspopup="true"
+        aria-controls="made-filter-menu"
         className="flex items-center justify-between w-full px-4 py-3 font-medium text-[#333333] bg-white border-2 border-slate-400 rounded-md hover:bg-gray-50 focus:outline-none focus:border-slate-600"
       >
         <span className="flex-1 text-left truncate">
@@ -101,7 +105,12 @@ export default function MadeFilter({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg border-slate-400 max-h-64">
+        <div
+          id="made-filter-menu"
+          role="group"
+          aria-labelledby="made-filter-button"
+          className="absolute z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg border-slate-400 max-h-64"
+        >
           <div className="p-2">
             {/* All 選項 */}
             <label className="flex items-center px-3 py-2 font-medium text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100">
@@ -161,6 +170,7 @@ export default function MadeFilter({
           {selectedMades.length > 0 && (
             <div className="p-2 border-t border-gray-400">
               <button
+                type="button"
                 onClick={handleClearAll}
                 className="w-full px-3 py-2 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-400 rounded-lg hover:bg-gray-100"
               >

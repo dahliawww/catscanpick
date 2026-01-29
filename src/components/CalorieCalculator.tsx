@@ -119,7 +119,12 @@ export default function CalorieCalculator() {
           </div>
 
           {/* 計算結果 */}
-          <div className="grid gap-4 pt-6">
+          <div
+            className="grid gap-4 pt-6"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {/* 熱量需求 */}
             <div className="px-4 py-4 border-2 rounded-lg shadow-lg border-brand-yellow bg-brand-yellow/10">
               <div className="space-y-3">

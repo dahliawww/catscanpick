@@ -37,7 +37,14 @@ const Header = ({
 
             {/* Calorie Calculator Button */}
             <button
+              type="button"
               onClick={handleToggleCalculator}
+              {...(showCalorieCalculator
+                ? { "aria-expanded": "true" }
+                : { "aria-expanded": "false" })}
+              aria-label={
+                showCalorieCalculator ? "關閉熱量計算機" : "開啟熱量計算機"
+              }
               className="font-bold text-center transition-all duration-200 rounded-full cursor-pointer group md:text-xl font-huninn bg-brand-lightpink hover:bg-brand-pink"
             >
               <div className="px-4 py-4 text-slate-700 md:px-6 fill-slate-700 hover:fill-white">

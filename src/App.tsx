@@ -10,6 +10,7 @@ import Header from "./partical/Header";
 import Footer from "./partical/Footer";
 import CatPawBackground from "./components/CatPawBackground";
 import Loading from "./components/Loading";
+import TextBlock from "./components/TextBlock";
 
 // ============================================================================
 // Types
@@ -146,7 +147,6 @@ function App() {
           data.push(catCan);
         }
 
-        console.log(`Loaded ${data.length} cat can products`);
         setCatCans(data);
 
         // 預設全選所有選項
@@ -271,7 +271,7 @@ function App() {
             showCalorieCalculator={showCalorieCalculator}
             setShowCalorieCalculator={setShowCalorieCalculator}
           />
-          <div className="py-12 text-center">
+          <div className="py-12 text-center" role="alert">
             <p className="text-xl text-gray-600">
               無法載入數據，請檢查 CSV 文件是否存在
             </p>
@@ -292,6 +292,10 @@ function App() {
 
       {/* Header */}
       <div className="relative z-10 mx-auto max-w-[700px]">
+        <h1 className="sr-only">
+          2026貓罐頭比較推薦｜依照營養成分、產地與重量挑選貓罐
+        </h1>
+
         <Header
           showCalorieCalculator={showCalorieCalculator}
           setShowCalorieCalculator={setShowCalorieCalculator}
@@ -311,7 +315,7 @@ function App() {
         </div>
       )}
       {/* Main Content */}
-      <div className="relative z-10 py-6 md:mt-4 md:px-2">
+      <main id="main" className="relative z-10 py-6 md:mt-4 md:px-2">
         <div className="mx-auto max-w-[1280px]">
           {/* Filters Section */}
           <div className="max-w-[1280px] mb-6 flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mx-auto px-4 ">
@@ -353,8 +357,10 @@ function App() {
               onSort={handleSort}
             />
           </div>
+          {/* Text Block */}
+          <TextBlock />
         </div>
-      </div>
+      </main>
       {/* Footer */}
       <div className="pt-1 pb-6 bg-brand-beige">
         <Footer />
