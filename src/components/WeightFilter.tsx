@@ -78,10 +78,12 @@ export default function WeightFilter({
         id="weight-filter-button"
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        {...(isOpen ? { "aria-expanded": "true" } : { "aria-expanded": "false" })}
+        {...(isOpen
+          ? { "aria-expanded": "true" }
+          : { "aria-expanded": "false" })}
         aria-haspopup="true"
         aria-controls="weight-filter-menu"
-        className="flex items-center justify-between w-full px-4 py-3 font-medium text-[#333333] transition-colors duration-200 bg-white border-2 border-slate-400 rounded-md hover:bg-gray-50 focus:outline-none focus:border-slate-600"
+        className="flex items-center justify-between  w-full px-4 py-3 font-medium text-[#333333] transition-colors duration-200 bg-white border-2 border-slate-400 rounded-md hover:bg-gray-50 focus:outline-none focus:border-slate-600"
       >
         <span className="flex-1 text-left truncate">
           {isAllSelected
@@ -110,7 +112,7 @@ export default function WeightFilter({
           id="weight-filter-menu"
           role="group"
           aria-labelledby="weight-filter-button"
-          className="absolute z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg border-slate-400 max-h-64"
+          className="absolute z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg md:w-40 border-slate-400 max-h-64"
         >
           <div className="p-2">
             {/* All 選項 */}

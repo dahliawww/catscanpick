@@ -16,12 +16,68 @@ type SortField =
   | null;
 type SortOrder = "asc" | "desc" | null;
 
+/** 表格欄位設定，供 TableFilter 與表格渲染共用 */
+export const TABLE_COLUMNS = [
+  { id: "flaver", label: "口味", sticky: true },
+  { id: "brand", label: "品牌" },
+  { id: "name", label: "名稱" },
+  { id: "made", label: "產地" },
+  {
+    id: "weight_g",
+    label: "重量(g)",
+    sortField: "weight_g" as SortField,
+    sortAriaLabel: "依重量排序",
+  },
+  {
+    id: "kcal",
+    label: "熱量(kcal)",
+    sortField: "kcal" as SortField,
+    sortAriaLabel: "依熱量排序",
+  },
+  {
+    id: "moistureContent",
+    label: "水分(ml)",
+    sortField: "moistureContent" as SortField,
+    sortAriaLabel: "依水分含量排序",
+  },
+  {
+    id: "protein",
+    label: "粗蛋白質(%)",
+    sortField: "protein" as SortField,
+    sortAriaLabel: "依粗蛋白質排序",
+  },
+  {
+    id: "fat",
+    label: "粗脂肪(%)",
+    sortField: "fat" as SortField,
+    sortAriaLabel: "依粗脂肪排序",
+  },
+  {
+    id: "Ca",
+    label: "鈣(%)",
+    sortField: "Ca" as SortField,
+    sortAriaLabel: "依鈣排序",
+  },
+  {
+    id: "P",
+    label: "磷(%)",
+    sortField: "P" as SortField,
+    sortAriaLabel: "依磷排序",
+  },
+  { id: "fiber", label: "粗纖維(%)" },
+  { id: "ash", label: "灰分(%)" },
+  { id: "taurineContent", label: "牛磺酸(mg)" },
+] as const;
+
+export type TableColumnId = (typeof TABLE_COLUMNS)[number]["id"];
+
 interface CatCanTableProps {
   catCans: CatCan[];
   searchQuery: string;
   sortField: SortField;
   sortOrder: SortOrder;
   onSort: (field: SortField) => void;
+  visibleColumns: Record<string, boolean>;
 }
 
 // 排序圖標組件
@@ -98,7 +154,12 @@ export default function CatCanTable({
   sortField,
   sortOrder,
   onSort,
+  visibleColumns,
 }: CatCanTableProps) {
+  const visibleCols = TABLE_COLUMNS.filter(
+    (col) => col.id === "flaver" || visibleColumns[col.id] !== false,
+  );
+
   return (
     <>
       {/* Table Container */}
@@ -111,114 +172,79 @@ export default function CatCanTable({
             </caption>
             <thead className="table-thead">
               <tr>
-                <th scope="col" className="text-left table-th-sticky">
-                  口味
-                </th>
-                <th scope="col" className="text-left table-th-base">
-                  品牌
-                </th>
-                {/* <th scope="col" className="text-left table-th-base">名稱</th> */}
-                <th scope="col" className="text-left table-th-base">
-                  產地
-                </th>
-                <SortableHeader
-                  field="weight_g"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依重量排序"
-                >
-                  重量(g)
-                </SortableHeader>
-                <SortableHeader
-                  field="kcal"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依熱量排序"
-                >
-                  熱量(kcal)
-                </SortableHeader>
-                <SortableHeader
-                  field="moistureContent"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依水分含量排序"
-                >
-                  水分(ml)
-                </SortableHeader>
-                <SortableHeader
-                  field="protein"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依粗蛋白質排序"
-                >
-                  粗蛋白質(%)
-                </SortableHeader>
-                <SortableHeader
-                  field="fat"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依粗脂肪排序"
-                >
-                  粗脂肪(%)
-                </SortableHeader>
-                <SortableHeader
-                  field="Ca"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依鈣排序"
-                >
-                  鈣(%)
-                </SortableHeader>
-                <SortableHeader
-                  field="P"
-                  sortField={sortField}
-                  sortOrder={sortOrder}
-                  onSort={onSort}
-                  ariaLabel="依磷排序"
-                >
-                  磷(%)
-                </SortableHeader>
-                <th scope="col" className="text-center table-th-base">
-                  粗纖維(%)
-                </th>
-                <th scope="col" className="text-center table-th-base">
-                  灰分(%)
-                </th>
-                <th scope="col" className="text-center table-th-base">
-                  牛磺酸(mg)
-                </th>
+                {visibleCols.map((col) => {
+                  if ("sortField" in col && col.sortField) {
+                    return (
+                      <SortableHeader
+                        key={col.id}
+                        field={col.sortField}
+                        sortField={sortField}
+                        sortOrder={sortOrder}
+                        onSort={onSort}
+                        ariaLabel={col.sortAriaLabel ?? ""}
+                      >
+                        {col.label}
+                      </SortableHeader>
+                    );
+                  }
+                  const isLeftAlign =
+                    col.id === "brand" ||
+                    col.id === "name" ||
+                    col.id === "made";
+                  return (
+                    <th
+                      key={col.id}
+                      scope="col"
+                      className={
+                        "sticky" in col && col.sticky
+                          ? "text-left table-th-sticky"
+                          : isLeftAlign
+                            ? "text-left table-th-base"
+                            : "text-center table-th-base"
+                      }
+                    >
+                      {col.label}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody className="table-tbody">
               {catCans.map((catCan, index) => (
                 <tr key={index} className="table-tr">
-                  <th
-                    scope="row"
-                    className="font-normal text-left table-td-sticky"
-                  >
-                    {catCan.flaver}
-                  </th>
-                  <td className="font-medium table-td-base">{catCan.brand}</td>
-                  {/* <td className="table-td-base">{catCan.name}</td> */}
-                  <td className="table-td-base">{catCan.made}</td>
-                  <td className="table-td-center">{catCan.weight_g}</td>
-                  <td className="table-td-center">{catCan.kcal}</td>
-                  <td className="table-td-center text-slate-800">
-                    {catCan.moistureContent}
-                  </td>
-                  <td className="table-td-center">{catCan.protein}</td>
-                  <td className="table-td-center">{catCan.fat}</td>
-                  <td className="table-td-center">{catCan.Ca}</td>
-                  <td className="table-td-center">{catCan.P}</td>
-                  <td className="table-td-center">{catCan.fiber}</td>
-                  <td className="table-td-center">{catCan.ash}</td>
-                  <td className="table-td-taurine">{catCan.taurineContent}</td>
+                  {visibleCols.map((col) => {
+                    const value =
+                      col.id === "moistureContent"
+                        ? catCan.moistureContent
+                        : catCan[col.id as keyof CatCan];
+                    const isSticky = "sticky" in col && col.sticky;
+                    if (isSticky) {
+                      return (
+                        <th
+                          key={col.id}
+                          scope="row"
+                          className="font-normal text-left table-td-sticky"
+                        >
+                          {String(value ?? "")}
+                        </th>
+                      );
+                    }
+                    const tdClass =
+                      col.id === "brand"
+                        ? "font-medium table-td-base"
+                        : col.id === "name" || col.id === "made"
+                          ? "table-td-base"
+                          : col.id === "taurineContent"
+                            ? "table-td-taurine"
+                            : col.id === "moistureContent"
+                              ? "table-td-center text-slate-800"
+                              : "table-td-center";
+                    return (
+                      <td key={col.id} className={tdClass}>
+                        {String(value ?? "")}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>

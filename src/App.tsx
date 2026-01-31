@@ -5,12 +5,13 @@ import SearchBar from "./components/SearchBar";
 import WeightFilter from "./components/WeightFilter";
 import MadeFilter from "./components/MadeFilter";
 import BrandFilter from "./components/BrandFilter";
-import CatCanTable from "./components/CatCanTable";
+import CatCanTable, { TABLE_COLUMNS } from "./components/CatCanTable";
 import Header from "./partical/Header";
 import Footer from "./partical/Footer";
 import CatPawBackground from "./components/CatPawBackground";
 import Loading from "./components/Loading";
 import TextBlock from "./components/TextBlock";
+import TableFilter from "./components/TableFilter";
 
 // ============================================================================
 // Types
@@ -87,6 +88,9 @@ function App() {
   const [sortField, setSortField] = useState<SortField>("weight_g");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [showCalorieCalculator, setShowCalorieCalculator] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(TABLE_COLUMNS.map((col) => [col.id, true])),
+  );
 
   // ============================================================================
   // Data Loading
@@ -326,24 +330,37 @@ function App() {
                 onSearchChange={setSearchQuery}
               />
             </div>
-
-            {/* Filter Buttons */}
-            <div className="flex flex-col w-full space-y-4 md:w-2/3 md:flex-row md:space-x-4 md:space-y-0">
-              <MadeFilter
-                availableMades={availableMades}
-                selectedMades={selectedMades}
-                onMadeChange={setSelectedMades}
-              />
-              <BrandFilter
-                availableBrands={availableBrands}
-                selectedBrands={selectedBrands}
-                onBrandChange={setSelectedBrands}
-              />
-              <WeightFilter
-                availableWeights={availableWeights}
-                selectedWeights={selectedWeights}
-                onWeightChange={setSelectedWeights}
-              />
+            <div className="w-full md:w-2/3">
+              {/* Filter Buttons */}
+              <div className="grid grid-cols-6 gap-4">
+                <div className="col-span-6 md:col-span-3">
+                  <BrandFilter
+                    availableBrands={availableBrands}
+                    selectedBrands={selectedBrands}
+                    onBrandChange={setSelectedBrands}
+                  />
+                </div>
+                <div className="col-span-6 md:col-span-1">
+                  <MadeFilter
+                    availableMades={availableMades}
+                    selectedMades={selectedMades}
+                    onMadeChange={setSelectedMades}
+                  />
+                </div>
+                <div className="w-full col-span-6 md:col-span-1">
+                  <WeightFilter
+                    availableWeights={availableWeights}
+                    selectedWeights={selectedWeights}
+                    onWeightChange={setSelectedWeights}
+                  />
+                </div>
+                <div className="col-span-6 md:col-span-1">
+                  <TableFilter
+                    visibleColumns={visibleColumns}
+                    onColumnsChange={setVisibleColumns}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -355,6 +372,7 @@ function App() {
               sortField={sortField}
               sortOrder={sortOrder}
               onSort={handleSort}
+              visibleColumns={visibleColumns}
             />
           </div>
           {/* Text Block */}
