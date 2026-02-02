@@ -1,102 +1,130 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import type { CatCan } from "../types";
+import { DER_RANGES, type DERRange } from "./calorieCalculator/constants";
+import {
+  calculateDailyCalories,
+  type DailyCalorieResult,
+} from "./calorieCalculator/utils";
+import CalorieCalculatorRemainingModal from "./calorieCalculator/CalorieCalculatorRemainingModal";
+import CalorieCalculatorTodayMenu from "./calorieCalculator/CalorieCalculatorTodayMenu";
 
-interface DERRange {
-  label: string;
-  min: number;
-  max: number;
+interface CalorieCalculatorProps {
+  catCans: CatCan[];
 }
 
-const DER_RANGES: DERRange[] = [
-  { label: "幼貓 (<4個月)", min: 2.5, max: 3.0 },
-  { label: "幼貓 (4-12個月)", min: 2.0, max: 2.5 },
-  { label: "成貓 (絕育)", min: 1.2, max: 1.4 },
-  { label: "成貓 (未絕育)", min: 1.4, max: 1.6 },
-  { label: "懷孕", min: 1.6, max: 2.0 },
-  { label: "哺乳", min: 2.0, max: 6.0 },
-  { label: "減重", min: 0.8, max: 1.0 },
-  { label: "增重", min: 1.2, max: 1.8 },
-];
+const todayKey = () => new Date().toISOString().slice(0, 10);
 
-export default function CalorieCalculator() {
-  // 從 localStorage 讀取上次的體重，如果沒有則為空字串
+export default function CalorieCalculator({ catCans }: CalorieCalculatorProps) {
   const [weight, setWeight] = useState<string>(() => {
-    const savedWeight = localStorage.getItem("catWeight");
-    return savedWeight || "";
+    const saved = localStorage.getItem("catWeight");
+    return saved || "";
   });
-  const [selectedDER, setSelectedDER] = useState<DERRange>(DER_RANGES[2]); // 預設成貓絕育
-
-  // 當體重改變時，儲存到 localStorage
-  useEffect(() => {
-    if (weight) {
-      localStorage.setItem("catWeight", weight);
+  const [selectedDER, setSelectedDER] = useState<DERRange>(DER_RANGES[2]);
+  const [canSearchInput, setCanSearchInput] = useState("");
+  const [selectedCan, setSelectedCan] = useState<CatCan | null>(null);
+  const [showRemainingModal, setShowRemainingModal] = useState(false);
+  const [extraWater, setExtraWater] = useState<string>(() => {
+    const saved = localStorage.getItem("calorieCalculatorExtraWater");
+    return saved ?? "0";
+  });
+  const [todayConsumed, setTodayConsumed] = useState<CatCan[]>(() => {
+    const saved = localStorage.getItem("calorieCalculatorTodayConsumed");
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved) as
+        | CatCan[]
+        | { date: string; data: CatCan[] };
+      if (Array.isArray(parsed)) return [];
+      if (
+        parsed &&
+        typeof parsed.date === "string" &&
+        Array.isArray(parsed.data)
+      )
+        return parsed.date === todayKey() ? parsed.data : [];
+      return [];
+    } catch {
+      return [];
     }
+  });
+
+  useEffect(() => {
+    if (weight) localStorage.setItem("catWeight", weight);
   }, [weight]);
 
-  // 計算 RER = 70 × 體重(kg)的0.75次方
-  const calculateRER = (weightKg: number): number => {
-    return 70 * Math.pow(weightKg, 0.75);
-  };
+  useEffect(() => {
+    localStorage.setItem(
+      "calorieCalculatorTodayConsumed",
+      JSON.stringify({ date: todayKey(), data: todayConsumed }),
+    );
+  }, [todayConsumed]);
 
-  // 計算一天所需熱量範圍 = RER × DER
-  // 計算一天所需水分 = 每公斤體重 × 40-60毫升
-  const calculateDailyCalories = () => {
-    const weightNum = parseFloat(weight);
-    if (!weight || isNaN(weightNum) || weightNum <= 0) {
-      return null;
+  useEffect(() => {
+    localStorage.setItem("calorieCalculatorExtraWater", extraWater);
+  }, [extraWater]);
+
+  const handleSubmitConsumed = useCallback(() => {
+    setTodayConsumed((prev) => {
+      if (!selectedCan) return prev;
+      return [...prev, selectedCan];
+    });
+    if (selectedCan) {
+      setSelectedCan(null);
+      setCanSearchInput("");
     }
+  }, [selectedCan]);
 
-    const rer = calculateRER(weightNum);
-    const minCalories = rer * selectedDER.min;
-    const maxCalories = rer * selectedDER.max;
+  const result = useMemo(
+    () => calculateDailyCalories(weight, selectedDER),
+    [weight, selectedDER],
+  );
 
-    // 計算水分需求：每公斤體重 × 40-60毫升
-    const minWater = weightNum * 40;
-    const maxWater = weightNum * 60;
+  const openRemainingModal = useCallback(() => setShowRemainingModal(true), []);
+  const closeRemainingModal = useCallback(
+    () => setShowRemainingModal(false),
+    [],
+  );
 
-    return {
-      rer: rer.toFixed(1),
-      minCalories: minCalories.toFixed(1),
-      maxCalories: maxCalories.toFixed(1),
-      minWater: minWater.toFixed(0),
-      maxWater: maxWater.toFixed(0),
-    };
-  };
+  const extraWaterNum = parseFloat(extraWater) || 0;
+  const currentCanKcal = selectedCan ? parseFloat(selectedCan.kcal) || 0 : 0;
+  const currentCanMl = selectedCan
+    ? parseFloat(selectedCan.moistureContent) || 0
+    : 0;
+  const totalUsedForRemainingKcal = currentCanKcal;
+  const totalUsedForRemainingMl = currentCanMl + extraWaterNum;
 
-  const result = calculateDailyCalories();
+  const remainingKcal =
+    result != null
+      ? Math.max(0, parseFloat(result.minCalories) - totalUsedForRemainingKcal)
+      : null;
+  const remainingMl =
+    result != null
+      ? Math.max(0, parseFloat(result.minWater) - totalUsedForRemainingMl)
+      : null;
 
   return (
     <div className="mx-4 md:my-3">
       <div className="p-2 border-2 rounded-md shadow-xl bg-brand-pink border-slate-600">
         <div className="px-3 py-6 bg-white rounded-md md:p-6">
           <div className="grid gap-6 md:grid-cols-2">
-            {/* 體重輸入 */}
             <div>
-              <label
-                htmlFor="cat-weight"
-                className="block mb-2 text-sm font-medium text-slate-800 font-huninn"
-              >
+              <label htmlFor="cat-weight" className="form-label">
                 貓咪體重 (kg)
               </label>
               <input
                 id="cat-weight"
                 type="number"
                 value={weight}
-                onChange={(e) => {
-                  setWeight(e.target.value);
-                }}
+                onChange={(e) => setWeight(e.target.value)}
                 placeholder="例如: 4.5"
                 step="0.1"
                 min="0.1"
-                className="w-full p-3 transition-all duration-200 bg-white border-2 rounded-lg text-slate-800 border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-brand-yellow font-huninn"
+                aria-label="貓咪體重 kg"
+                title="貓咪體重 kg"
+                className="input"
               />
             </div>
-
-            {/* DER 選擇 */}
             <div className="relative">
-              <label
-                htmlFor="der-select"
-                className="block mb-2 text-sm font-medium text-slate-800 font-huninn"
-              >
+              <label htmlFor="der-select" className="form-label">
                 貓咪狀態
               </label>
               <select
@@ -107,7 +135,7 @@ export default function CalorieCalculator() {
                 onChange={(e) =>
                   setSelectedDER(DER_RANGES[parseInt(e.target.value)])
                 }
-                className="w-full p-3 pr-10 transition-all duration-200 bg-white border-2 rounded-lg select-dropdown text-slate-800 border-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-yellow focus:border-brand-yellow font-huninn"
+                className="input select-dropdown pr-10"
               >
                 {DER_RANGES.map((range, index) => (
                   <option key={index} value={index}>
@@ -118,51 +146,111 @@ export default function CalorieCalculator() {
             </div>
           </div>
 
-          {/* 計算結果 */}
           <div
             className="grid gap-4 pt-6"
             role="status"
             aria-live="polite"
             aria-atomic="true"
           >
-            {/* 熱量需求 */}
-            <div className="px-4 py-4 border-2 rounded-lg shadow-lg border-brand-yellow bg-brand-yellow/10">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-800 font-huninn">
-                    RER (基礎代謝率):
-                  </span>
-                  <span className="text-sm font-semibold text-slate-800 font-huninn">
-                    {result ? `${result.rer} kcal` : "-"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-800 font-huninn">
-                    每日熱量範圍:
-                  </span>
-                  <span className="text-lg font-bold text-slate-800 font-huninn">
-                    {result
-                      ? `${result.minCalories} - ${result.maxCalories} kcal`
-                      : "-"}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <DailyNeedsBlocks
+              result={result}
+              onOpenRemaining={openRemainingModal}
+            />
 
-            {/* 水分需求 */}
-            <div className="px-4 py-4 border-2 rounded-lg shadow-lg border-brand-yellow bg-brand-yellow/10">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-800 font-huninn">
-                  每日所需水分:
-                </span>
-                <span className="text-lg font-bold text-slate-800 font-huninn">
-                  {result ? `${result.minWater} - ${result.maxWater} ml` : "-"}
-                </span>
-              </div>
-            </div>
+            {catCans.length > 0 && (
+              <CalorieCalculatorTodayMenu
+                catCans={catCans}
+                selectedCan={selectedCan}
+                setSelectedCan={setSelectedCan}
+                canSearchInput={canSearchInput}
+                setCanSearchInput={setCanSearchInput}
+                extraWater={extraWater}
+                setExtraWater={setExtraWater}
+                onAddConsumed={handleSubmitConsumed}
+                onOpenRemainingModal={openRemainingModal}
+              />
+            )}
           </div>
         </div>
       </div>
+
+      <CalorieCalculatorRemainingModal
+        isOpen={showRemainingModal}
+        onClose={closeRemainingModal}
+        result={result}
+        remainingKcal={remainingKcal}
+        remainingMl={remainingMl}
+      />
     </div>
+  );
+}
+
+function DailyNeedsBlocks({
+  result,
+  onOpenRemaining,
+}: {
+  result: DailyCalorieResult | null;
+  onOpenRemaining: () => void;
+}) {
+  const openIfResult = () => result != null && onOpenRemaining();
+  const openOnKey = (e: React.KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && result != null) {
+      e.preventDefault();
+      onOpenRemaining();
+    }
+  };
+
+  return (
+    <>
+      <div
+        className="card-clickable"
+        role="button"
+        tabIndex={0}
+        onClick={openIfResult}
+        onKeyDown={openOnKey}
+        aria-label="每日熱量範圍，點擊可查看今日還需多少"
+      >
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-800 font-huninn">
+              RER (基礎代謝率):
+            </span>
+            <span className="text-sm font-semibold text-slate-800 font-huninn">
+              {result ? `${result.rer} kcal` : "-"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-800 font-huninn">
+              每日熱量範圍:
+            </span>
+            <span className="text-lg font-bold text-slate-800 font-huninn">
+              {result
+                ? `${result.minCalories} - ${result.maxCalories} kcal`
+                : "-"}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="card-clickable"
+        role="button"
+        tabIndex={0}
+        onClick={openIfResult}
+        onKeyDown={openOnKey}
+        aria-label="每日所需水分，點擊可查看今日還需多少"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-slate-800 font-huninn">
+            每日所需水分:
+          </span>
+          <span className="text-lg font-bold text-slate-800 font-huninn">
+            {result ? `${result.minWater} - ${result.maxWater} ml` : "-"}
+          </span>
+        </div>
+      </div>
+      <p className="text-xs text-slate-500 font-huninn">
+        點擊熱量或水分區塊、或下方「計算結果」按鈕可查看今日還需多少
+      </p>
+    </>
   );
 }

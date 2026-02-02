@@ -61,7 +61,7 @@ export default function TableFilter({
           : { "aria-expanded": "false" })}
         aria-haspopup="true"
         aria-controls="table-filter-menu"
-        className="flex items-center justify-between w-full h-full px-4 py-3 font-medium text-[#333333] border-2 rounded-md border-slate-400 bg-slate-200 hover:bg-slate-300 focus:outline-none focus:border-slate-600"
+        className="filter-trigger-alt"
       >
         <span className="flex-1 text-left truncate">設定</span>
         <AdjustmentsVerticalIcon className="w-6 h-6 shrink-0" />
@@ -72,14 +72,10 @@ export default function TableFilter({
           id="table-filter-menu"
           role="group"
           aria-labelledby="table-filter-button"
-          className="absolute right-0 z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg md:w-64 border-slate-400 max-h-80"
+          className="filter-dropdown right-0 md:w-64 max-h-80"
         >
           <div className="p-2">
-            {/* 全選：樣式同 WeightFilter 的 All */}
-            <label
-              className="flex items-center px-3 py-2 font-medium text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100"
-              onClick={handleSelectAll}
-            >
+            <label className="filter-option" onClick={handleSelectAll}>
               <div className="relative flex items-center justify-center shrink-0">
                 <input
                   type="checkbox"
@@ -89,10 +85,10 @@ export default function TableFilter({
                   readOnly
                 />
                 <div
-                  className={`relative w-4 h-4 border-2 rounded cursor-pointer transition-colors ${
+                  className={`filter-checkbox ${
                     isAllVisible
-                      ? "bg-slate-600 border-slate-600"
-                      : "border-slate-400 bg-white"
+                      ? "filter-checkbox-checked"
+                      : "filter-checkbox-unchecked"
                   }`}
                 >
                   {isAllVisible && (
@@ -102,14 +98,11 @@ export default function TableFilter({
               </div>
               <span className="ml-3">全選</span>
             </label>
-            <div className="my-1 border-t border-primary-dark/50" />
+            <div className="dropdown-divider" />
             {TABLE_COLUMNS.filter((col) => col.id !== "flaver").map((col) => {
               const checked = visibleColumns[col.id] !== false;
               return (
-                <label
-                  key={col.id}
-                  className="flex items-center px-3 py-2 text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100"
-                >
+                <label key={col.id} className="filter-option">
                   <div className="relative flex items-center justify-center shrink-0">
                     <input
                       type="checkbox"
@@ -118,10 +111,10 @@ export default function TableFilter({
                       className="sr-only"
                     />
                     <div
-                      className={`relative w-4 h-4 border-2 rounded cursor-pointer transition-colors ${
+                      className={`filter-checkbox ${
                         checked
-                          ? "bg-slate-600 border-slate-600"
-                          : "border-slate-400 bg-white"
+                          ? "filter-checkbox-checked"
+                          : "filter-checkbox-unchecked"
                       }`}
                     >
                       {checked && (

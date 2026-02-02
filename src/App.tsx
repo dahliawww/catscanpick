@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { CatCan } from "./types";
 import CalorieCalculator from "./components/CalorieCalculator";
 import SearchBar from "./components/SearchBar";
@@ -174,90 +174,85 @@ function App() {
   }, []);
 
   // ============================================================================
-  // Computed Values
+  // Computed Values（useMemo 避免每次 re-render 重算）
   // ============================================================================
 
-  // 獲取所有可用的選項（去重並排序）
-  const availableWeights = getUniqueValues(
-    catCans,
-    (c) => c.weight_g,
-    (a, b) => parseFloat(a) - parseFloat(b),
+  const availableWeights = useMemo(
+    () =>
+      getUniqueValues(
+        catCans,
+        (c) => c.weight_g,
+        (a, b) => parseFloat(a) - parseFloat(b),
+      ),
+    [catCans],
   );
-  const availableMades = getUniqueValues(catCans, (c) => c.made);
-  const availableBrands = getUniqueValues(catCans, (c) => c.brand);
+  const availableMades = useMemo(
+    () => getUniqueValues(catCans, (c) => c.made),
+    [catCans],
+  );
+  const availableBrands = useMemo(
+    () => getUniqueValues(catCans, (c) => c.brand),
+    [catCans],
+  );
 
-  // ============================================================================
-  // Filtering Logic
-  // ============================================================================
-
-  const filteredCatCans = catCans.filter((catCan) => {
-    // 搜尋過濾
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        catCan.made.toLowerCase().includes(query) ||
-        catCan.brand.toLowerCase().includes(query) ||
-        catCan.name.toLowerCase().includes(query) ||
-        catCan.flaver.toLowerCase().includes(query);
-      if (!matchesSearch) return false;
-    }
-
-    // 重量篩選
-    if (
-      selectedWeights.length > 0 &&
-      !selectedWeights.includes(catCan.weight_g)
-    ) {
-      return false;
-    }
-
-    // 產地篩選
-    if (selectedMades.length > 0 && !selectedMades.includes(catCan.made)) {
-      return false;
-    }
-
-    // 品牌篩選
-    if (selectedBrands.length > 0 && !selectedBrands.includes(catCan.brand)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  // ============================================================================
-  // Sorting Logic
-  // ============================================================================
+  const filteredCatCans = useMemo(() => {
+    return catCans.filter((catCan) => {
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const matchesSearch =
+          catCan.made.toLowerCase().includes(query) ||
+          catCan.brand.toLowerCase().includes(query) ||
+          catCan.name.toLowerCase().includes(query) ||
+          catCan.flaver.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
+      }
+      if (
+        selectedWeights.length > 0 &&
+        !selectedWeights.includes(catCan.weight_g)
+      ) {
+        return false;
+      }
+      if (selectedMades.length > 0 && !selectedMades.includes(catCan.made)) {
+        return false;
+      }
+      if (selectedBrands.length > 0 && !selectedBrands.includes(catCan.brand)) {
+        return false;
+      }
+      return true;
+    });
+  }, [catCans, searchQuery, selectedWeights, selectedMades, selectedBrands]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      // 如果點擊同一個欄位，在升冪和降冪之間切換
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      // 點擊新欄位，設為降冪（最重的在前）
       setSortField(field);
       setSortOrder("desc");
     }
   };
 
-  const sortedCatCans = [...filteredCatCans].sort((a, b) => {
-    if (!sortField || !sortOrder) return 0;
+  const sortedCatCans = useMemo(() => {
+    return [...filteredCatCans].sort((a, b) => {
+      if (!sortField || !sortOrder) return 0;
 
-    const getValue = (item: CatCan, field: SortField): number => {
-      if (!field) return 0;
-      const value = item[field];
-      if (value === "-") return -1;
-      const num = parseFloat(value);
-      return isNaN(num) ? -1 : num;
-    };
+      const getValue = (item: CatCan, f: SortField): number => {
+        if (!f) return 0;
+        const value = item[f];
+        if (value === "-") return -1;
+        const num = parseFloat(value);
+        return isNaN(num) ? -1 : num;
+      };
 
-    const aValue = getValue(a, sortField);
-    const bValue = getValue(b, sortField);
+      const aValue = getValue(a, sortField);
+      const bValue = getValue(b, sortField);
 
-    if (aValue === -1 && bValue === -1) return 0;
-    if (aValue === -1) return 1;
-    if (bValue === -1) return -1;
+      if (aValue === -1 && bValue === -1) return 0;
+      if (aValue === -1) return 1;
+      if (bValue === -1) return -1;
 
-    return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
-  });
+      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+    });
+  }, [filteredCatCans, sortField, sortOrder]);
 
   // ============================================================================
   // Loading & Error States
@@ -312,7 +307,7 @@ function App() {
           <div className="max-w-[700px] mx-auto">
             <div className="grid grid-cols-1">
               <div className="py-2">
-                <CalorieCalculator />
+                <CalorieCalculator catCans={catCans} />
               </div>
             </div>
           </div>

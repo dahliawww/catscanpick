@@ -83,7 +83,7 @@ export default function WeightFilter({
           : { "aria-expanded": "false" })}
         aria-haspopup="true"
         aria-controls="weight-filter-menu"
-        className="flex items-center justify-between  w-full px-4 py-3 font-medium text-[#333333] transition-colors duration-200 bg-white border-2 border-slate-400 rounded-md hover:bg-gray-50 focus:outline-none focus:border-slate-600"
+        className="filter-trigger"
       >
         <span className="flex-1 text-left truncate">
           {isAllSelected
@@ -112,11 +112,11 @@ export default function WeightFilter({
           id="weight-filter-menu"
           role="group"
           aria-labelledby="weight-filter-button"
-          className="absolute z-50 w-full mt-2 overflow-y-auto bg-white border-2 rounded-lg shadow-lg md:w-40 border-slate-400 max-h-64"
+          className="filter-dropdown md:w-40 max-h-64"
         >
           <div className="p-2">
             {/* All 選項 */}
-            <label className="flex items-center px-3 py-2 font-medium text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-100">
+            <label className="filter-option">
               <div className="relative flex items-center justify-center">
                 <input
                   type="checkbox"
@@ -125,10 +125,10 @@ export default function WeightFilter({
                   className="sr-only"
                 />
                 <div
-                  className={`w-4 h-4 border-2 rounded cursor-pointer transition-colors ${
+                  className={`filter-checkbox ${
                     isAllSelected
-                      ? "bg-slate-600 border-slate-600"
-                      : "border-slate-400 bg-white"
+                      ? "filter-checkbox-checked"
+                      : "filter-checkbox-unchecked"
                   }`}
                 >
                   {isAllSelected && (
@@ -138,14 +138,11 @@ export default function WeightFilter({
               </div>
               <span className="ml-3">All</span>
             </label>
-            <div className="my-1 border-t border-primary-dark/50"></div>
+            <div className="dropdown-divider" />
             {availableWeights.map((weight) => {
               const isSelected = selectedWeights.includes(weight);
               return (
-                <label
-                  key={weight}
-                  className="flex items-center px-3 py-2 text-[#333333] transition-colors rounded-lg cursor-pointer hover:bg-gray-200"
-                >
+                <label key={weight} className="filter-option-item">
                   <div className="relative flex items-center justify-center">
                     <input
                       type="checkbox"
@@ -154,10 +151,10 @@ export default function WeightFilter({
                       className="sr-only"
                     />
                     <div
-                      className={`w-4 h-4 border-2 rounded cursor-pointer transition-colors ${
+                      className={`filter-checkbox ${
                         isSelected
-                          ? "bg-slate-600 border-slate-600"
-                          : "border-slate-400 bg-white"
+                          ? "filter-checkbox-checked"
+                          : "filter-checkbox-unchecked"
                       }`}
                     >
                       {isSelected && (
@@ -171,11 +168,11 @@ export default function WeightFilter({
             })}
           </div>
           {selectedWeights.length > 0 && (
-            <div className="p-2 border-t border-gray-400">
+            <div className="dropdown-footer-border">
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="w-full px-3 py-2 font-medium text-[#333333] transition-colors bg-white border-2 border-gray-400 rounded-lg hover:bg-gray-100"
+                className="filter-clear-btn"
               >
                 清除全部
               </button>
